@@ -1,4 +1,4 @@
-require_relative '../config/environment'
+require_relative "../config/environment"
 
 
 url = 'https://skincare-api.herokuapp.com/product?q=rose&limit=25&page=1'
@@ -17,14 +17,10 @@ end
 
 cli = CLI.new
 cli.sign_up?
-cli.view_products
-cli.select_products
+product = cli.view_products
+cli.select_products(product)
 cli.review_of_product
 
 cli.menu
-
-
-
-
 
 # cli.review_product(num)
