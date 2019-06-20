@@ -12,8 +12,11 @@ class CLI
     puts ""
     puts "WELCOME TO INGRID AND SOPHIA'S BEAUTY REVIEW SITE".yellow
     puts ""
-    puts "Sign Up Here?".blue
-    response = gets.chomp.downcase
+    prompt = TTY::Prompt.new
+    response = prompt.select("Sign Up Here?".blue) do |menu_items|
+      menu_items.choice "Yes", "yes"
+      menu_items.choice "No", "no"
+    end
     if response == "yes"
       puts "Fill in a username and password".blue
       puts ""
@@ -23,18 +26,24 @@ class CLI
       puts ""
       puts "Password: ".blue
       password = gets.chomp
-      puts "Great! Now, let's list your ingredient preferences:".blue
-      puts "
-            1. vegan \n
-            2. cruelty-free \n
-            3. paraben-free \n
-            4. fragrance-free \n
-            5. alcohol free \n"
+
+      prompt = TTY::Prompt.new
+      preferences = prompt.select("Great! Now, let's list your ingredient preferences:".blue) do |menu_items|
+        menu_items.choice "1. Vegan", "Vegan"
+        menu_items.choice "2. Cruelty-Free", "Cruelty-Free"
+        menu_items.choice "3. Paraben-Free", "Paraben-Free"
+        menu_items.choice "4. Fragrance-Free", "Fragrance-Free"
+        menu_items.choice "5. Alcohol-Free", "Alcohol-Free"
+      end
+      #   puts "
+      #         1. vegan \n
+      #         2. cruelty-free \n
+      #         3. paraben-free \n
+      #         4. fragrance-free \n
+      #         5. alcohol free \n"
+      #   puts ""
+      puts "My preference is...#{preferences}!".yellow
       puts ""
-      puts "My preference is...".yellow
-      preferences = gets.chomp
-      puts ""
-      puts "Here are your preferences: #{preferences}!".yellow
       @user = User.find_or_create_by(name: user_name, preferences: preferences)
     end
   end
@@ -42,16 +51,14 @@ class CLI
   ########################################################################################
 
   def menu
-    puts ""
-    puts ""
-    puts "Menu:"
-    puts "1. Update Review"
-    puts "2. Delete Review"
-    puts "3. I am done!"
-    puts ""
-    puts ""
-    puts "Which option would you like?".blue
-    option = gets.chomp
+    puts "\nMenu:\n\n".blue
+    prompt = TTY::Prompt.new
+    option = prompt.select("Which option would you like?".blue) do |menu_items|
+      menu_items.choice "1. Update Review", "1"
+      menu_items.choice "2. Delete Review", "2"
+      menu_items.choice "3. I am done!", "3"
+    end
+    puts "\n\n"
     if option == "1"
       puts "Do you want to update your review?".blue
       response_to_q = gets.chomp
@@ -70,20 +77,26 @@ class CLI
   #### THIS IS A [READ METHOD]
 
   def view_products
-    puts "MARKET PLACE".red
-    puts ""
-    products = Product.all.map do |product|
-      product.name
+    prompt = TTY::Prompt.new
+    product = prompt.select("MARKET PLACE".red) do |menu_items|
+      Product.all.each_with_index do |menu_item, index|
+        menu_items.choice "#{index + 1}. #{menu_item.name}", menu_item.name
+      end
     end
-    puts products.uniq
+    @product = product
+    return product
+    # puts ""
+    # products = Product.all.map do |product|
+    #   product.name
+    # end
+    # puts products.uniq
   end
 
   ########################################################################################
-  def select_products
+  def select_products(product)
     puts ""
     puts ""
-    puts "Select your items:"
-    product_name = gets.chomp
+    puts "Items selected: #{product}".yellow
   end
 
   ###################################################### ONEEEEEE##################################
@@ -100,7 +113,7 @@ class CLI
     puts ""
     puts ""
     puts ""
-    puts "What is your username?".blue
+    puts "What is your username?".blue #?
     @user_name = gets.chomp
     r = @user.id
     puts "You're user ID is #{r}".cyan
@@ -115,7 +128,8 @@ class CLI
   def get_product_info
     puts "What products are in your cart?".blue
     puts ""
-    product_name = gets.chomp
+    product_name = @product
+    puts "Your cart has : #{@product}"
     puts ""
     n = Product.find_by(name: product_name).id
     puts "The product ID is #{n}".cyan
@@ -227,4 +241,5 @@ class CLI
   #     Review.all.select do |review|
 
   #   end
+
 end #end of CLI class
