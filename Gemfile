@@ -10,4 +10,8 @@ gem 'activerecord', '~> 5.2'
 gem 'rspec'
 gem 'rake'
 gem 'colorize'
+
+gem 'rest-client'
+
 gem 'tty-prompt'
+

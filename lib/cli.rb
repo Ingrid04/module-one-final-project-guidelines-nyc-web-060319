@@ -26,6 +26,18 @@ class CLI
       puts ""
       puts "Password: ".blue
       password = gets.chomp
+      puts ""
+#       puts "Great! Now, let's list your ingredient preferences:".blue
+#       puts "
+#             1. vegan \n
+#             2. cruelty-free \n
+#             3. paraben-free \n
+#             4. fragrance-free \n
+#             5. alcohol free \n"
+#       puts ""
+#       puts "My preference is...".yellow
+#       preferences = gets.chomp
+
 
       prompt = TTY::Prompt.new
       preferences = prompt.select("Great! Now, let's list your ingredient preferences:".blue) do |menu_items|
@@ -43,6 +55,7 @@ class CLI
       #         5. alcohol free \n"
       #   puts ""
       puts "My preference is...#{preferences}!".yellow
+
       puts ""
       @user = User.find_or_create_by(name: user_name, preferences: preferences)
     end
@@ -51,6 +64,18 @@ class CLI
   ########################################################################################
 
   def menu
+
+    puts ""
+#     puts ""
+#     puts "Menu:".blue
+#     puts "1. Update Review"
+#     puts "2. Delete Review"
+#     puts "3. I am done!"
+#     puts ""
+#     puts ""
+#     puts "Which option would you like?".blue
+#     option = gets.chomp
+
     puts "\nMenu:\n\n".blue
     prompt = TTY::Prompt.new
     option = prompt.select("Which option would you like?".blue) do |menu_items|
@@ -59,6 +84,7 @@ class CLI
       menu_items.choice "3. I am done!", "3"
     end
     puts "\n\n"
+
     if option == "1"
       puts "Do you want to update your review?".blue
       response_to_q = gets.chomp
@@ -77,11 +103,19 @@ class CLI
   #### THIS IS A [READ METHOD]
 
   def view_products
+
+#     puts ""
+#     puts "MARKET PLACE".red
+#     puts ""
+#     products = Product.all.map do |product|
+#       product.name
+
     prompt = TTY::Prompt.new
     product = prompt.select("MARKET PLACE".red) do |menu_items|
       Product.all.each_with_index do |menu_item, index|
         menu_items.choice "#{index + 1}. #{menu_item.name}", menu_item.name
       end
+
     end
     @product = product
     return product
@@ -96,7 +130,12 @@ class CLI
   def select_products(product)
     puts ""
     puts ""
+
+    puts "Select your items:".blue
+    product_name = gets.chomp
+
     puts "Items selected: #{product}".yellow
+
   end
 
   ###################################################### ONEEEEEE##################################
@@ -173,6 +212,11 @@ class CLI
     end
   end
 
+  # def reviews
+  #  view =   Review.find_by(user_id: user.id)
+  #  # binding.pry
+  # end
+
   def find_content_review
     puts "Here are all of your reviews".yellow
     puts ""
@@ -197,15 +241,15 @@ class CLI
     if approve_review_change == "yes"
       puts "Please change review content".blue
       puts ""
-      change_review = gets.chomp #write the changes
+      change_review = gets.chomp
       puts ""
-      puts "Is this okay?".blue #making sure about the changes
-      puts change_review.yellow #prints the changes (new review)
+      puts "Is this okay?".blue
+      puts change_review.yellow
       puts ""
       response_to_change_review = gets.chomp
       if response_to_change_review == "yes"
-        review_content_change_2 = Review.find(chosen_review) #after yes, prints the new review
-        review_content_change_2.update(content: change_review) # saves the changes (review updated)
+        Review.find_by(id: chosen_review).update(content: change_review)
+
         puts "Thank you for your update!".blue
       else
         puts "Please finish updating...".blue
@@ -224,16 +268,17 @@ class CLI
     puts "I want to delete this review: ".blue
     delete_this = gets.chomp
     puts ""
-    deleted_review = Review.find(delete_this)
     puts "Are you sure you want to delete this #{delete_this}?".blue
     approve_delete_review = gets.chomp
     if approve_delete_review == "yes"
       puts "Review Deleted".blue
-      deleted_review.delete
+        Review.find_by(id: delete_this).destroy
     else
       puts "Please finish selecting your review to delete".blue
     end
   end
+
+
 
   #next step, show user all of his or her past reviews
 
